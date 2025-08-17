@@ -1,0 +1,3 @@
+- `ä` (228) -> should be replaced by "ae"
+- `ö` (246) -> should be replaced by "oe"
+- `ü` (252) -> should be replaced by "ue"
