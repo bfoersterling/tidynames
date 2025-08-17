@@ -25,7 +25,9 @@ archives:
       {{- if .Arm }}v{{ .Arm }}{{ end }}
 
 changelog:
-  sort: empty
+  # dont sort alphabetically, use the output of git log
+  # (which should be sorted by date)
+  sort: ""
   filters:
     exclude:
       - "^docs:"
