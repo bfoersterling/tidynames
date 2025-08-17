@@ -5,6 +5,12 @@ import (
 	"os"
 )
 
+var (
+	version = "dev"
+	commit  = "none"
+	date    = "unknown"
+)
+
 func main() {
 	cli_args := get_cli_args()
 
