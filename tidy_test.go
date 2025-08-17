@@ -184,4 +184,27 @@ func Test_replace_whitespace(t *testing.T) {
 		t.Fatalf("test_result is %q, but should be %q.\n",
 			test_result, expected_result)
 	}
+
+	// 2 - null rune value
+	input = []byte("foo\t  bar \t foo.txt")
+	expected_result = []byte("foobarfoo.txt")
+	test_result = replace_whitespace(input, 0)
+
+	if !bytes.Equal(test_result, expected_result) {
+		t.Fatalf("test_result is %q, but should be %q.\n",
+			test_result, expected_result)
+	}
+}
+
+func Benchmark_replace_whitespace(b *testing.B) {
+	// 1
+	rc := replace_config{
+		whitespace: '_',
+	}
+
+	input := []byte("foo\t  bar \t foo.txt")
+
+	for i := 0; i < b.N; i++ {
+		replace_whitespace(input, rc.whitespace)
+	}
 }

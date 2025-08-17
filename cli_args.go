@@ -27,7 +27,9 @@ func get_cli_args() (args cli_args) {
 }
 
 func (args cli_args) evalute() (err error) {
-	rc := replace_config{}
+	rc := replace_config{
+		whitespace: '_',
+	}
 
 	if args.version {
 		fmt.Printf("%s %s, commit: %s, build at: %s.\n", os.Args[0], version, commit, date)

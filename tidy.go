@@ -7,6 +7,7 @@ import (
 	"os"
 	"path"
 	"strings"
+	"unicode"
 )
 
 type replace_config struct {
@@ -23,6 +24,7 @@ func (rc replace_config) tidy_bytes(name []byte) (proper_name []byte) {
 			continue
 		}
 
+		// whitespace
 		if (r <= 32) && (rc.whitespace != 0) {
 			name_buffer.WriteByte(byte(rc.whitespace))
 			continue
@@ -34,6 +36,12 @@ func (rc replace_config) tidy_bytes(name []byte) (proper_name []byte) {
 	}
 
 	proper_name = name_buffer.Bytes()
+
+	if rc.whitespace != 0 {
+		proper_name = replace_whitespace(proper_name, rc.whitespace)
+	} else {
+		proper_name = replace_whitespace(proper_name, 0)
+	}
 
 	proper_name = bytes.ToLower(proper_name)
 
@@ -125,7 +133,10 @@ func (rc replace_config) tidy_entries(args cli_args, entries []string, writer io
 func replace_whitespace(name []byte, substitute rune) []byte {
 	tokens := bytes.Fields(name)
 	var substitute_bytes []byte = []byte("")
-	substitute_bytes = append(substitute_bytes, byte(substitute))
+
+	if substitute != 0 && !unicode.IsSpace(substitute) {
+		substitute_bytes = append(substitute_bytes, byte(substitute))
+	}
 
 	return bytes.Join(tokens, substitute_bytes)
 }
