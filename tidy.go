@@ -121,3 +121,11 @@ func (rc replace_config) tidy_entries(args cli_args, entries []string, writer io
 
 	return
 }
+
+func replace_whitespace(name []byte, substitute rune) []byte {
+	tokens := bytes.Fields(name)
+	var substitute_bytes []byte = []byte("")
+	substitute_bytes = append(substitute_bytes, byte(substitute))
+
+	return bytes.Join(tokens, substitute_bytes)
+}

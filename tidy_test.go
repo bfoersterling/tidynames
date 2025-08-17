@@ -169,3 +169,19 @@ func Test_tidy_entry(t *testing.T) {
 			"test_buf.String():\n%v\n", test_buf.String())
 	}
 }
+
+func Test_replace_whitespace(t *testing.T) {
+	// 1
+	rc := replace_config{
+		whitespace: '_',
+	}
+
+	input := []byte("foo\t  bar \t foo.txt")
+	expected_result := []byte("foo_bar_foo.txt")
+	test_result := replace_whitespace(input, rc.whitespace)
+
+	if !bytes.Equal(test_result, expected_result) {
+		t.Fatalf("test_result is %q, but should be %q.\n",
+			test_result, expected_result)
+	}
+}
