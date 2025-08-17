@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"os"
@@ -11,6 +12,32 @@ import (
 type replace_config struct {
 	nonascii   rune
 	whitespace rune
+}
+
+func (rc replace_config) tidy_bytes(name []byte) (proper_name []byte) {
+	var name_buffer bytes.Buffer
+
+	for _, r := range name {
+		if (32 < r) && (r < 127) {
+			name_buffer.WriteByte(r)
+			continue
+		}
+
+		if (r <= 32) && (rc.whitespace != 0) {
+			name_buffer.WriteByte(byte(rc.whitespace))
+			continue
+		}
+
+		if (r >= 127) && (rc.nonascii != 0) {
+			name_buffer.WriteByte(byte(rc.nonascii))
+		}
+	}
+
+	proper_name = name_buffer.Bytes()
+
+	proper_name = bytes.ToLower(proper_name)
+
+	return
 }
 
 func (rc replace_config) tidy_string(name string) (proper_name string) {
@@ -36,17 +63,17 @@ func (rc replace_config) tidy_string(name string) (proper_name string) {
 }
 
 func (rc replace_config) tidy_entry(entry_path string, dry_run bool, writer io.Writer) (err error) {
-	new_name := rc.tidy_string(path.Base(entry_path))
+	new_name := rc.tidy_bytes([]byte(path.Base(entry_path)))
 
 	// trailing slashes will cause path.Base to not return the parent dir
 	entry_path = strings.TrimRight(entry_path, "/")
 
-	if path.Base(entry_path) == new_name {
+	if path.Base(entry_path) == string(new_name) {
 		fmt.Fprintf(writer, "%q is already tidy.\n", entry_path)
 		return
 	}
 
-	err = rename_entry(entry_path, path.Dir(entry_path)+"/"+new_name, dry_run)
+	err = rename_entry(entry_path, path.Dir(entry_path)+"/"+string(new_name), dry_run)
 
 	if err != nil {
 		return
@@ -56,7 +83,7 @@ func (rc replace_config) tidy_entry(entry_path string, dry_run bool, writer io.W
 		fmt.Fprintf(writer, "(")
 	}
 
-	fmt.Fprintf(writer, "%q -> %q", entry_path, path.Dir(entry_path)+"/"+new_name)
+	fmt.Fprintf(writer, "%q -> %q", entry_path, path.Dir(entry_path)+"/"+string(new_name))
 
 	if dry_run {
 		fmt.Fprintf(writer, ")")

@@ -9,6 +9,9 @@ build:
 test:
 	go test -v
 
+bench:
+	go test -v -bench="."
+
 install: default
 	install -v -m 755 {{ binary }} /usr/local/bin/.
 
