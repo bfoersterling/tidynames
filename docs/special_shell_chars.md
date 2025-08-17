@@ -19,3 +19,15 @@ Should not be allowed:
 - `/` (46) (part of paths)
 
 48-57 are numbers and should be allowed.
+
+Should not be allowed:
+- `;` (59) (end of command, needs to be enclosed by quotes)
+- `>` (60) (needs to be enclosed by quotes)
+- `=` (61) (assignment, needs to be enclosed by quotes)
+- `<` (62) (needs to be enclosed by quotes)
+- `?` (63) (needs to be enclosed by quotes)
+
+Should be allowed:
+- `@` (64)
+
+65-90 are A-Z and should be allowed but converted to lowercase.
