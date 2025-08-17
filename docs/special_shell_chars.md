@@ -31,3 +31,23 @@ Should be allowed:
 - `@` (64)
 
 65-90 are A-Z and should be allowed but converted to lowercase.
+
+Should not be allowed:
+- `[` (91) (needs to be enclosed by quotes)
+- `\` (92) (needs to be escaped and enclosed by quotes)
+- `]` (93) (not harmful, but should be removed as part of char 91)
+- `^` (94) (needs to be enclosed by quotes)
+
+Should be allowed
+- `_` (95)
+
+Should not be allowed:
+- backticks (96) (start of command expansion, needs to be enclosed by quotes)
+
+97-122 are a-z and should be allowed.
+
+Should not be allowed:
+- `{` (123) (if it is the first char, it needs to be escaped)
+- `|` (124) (pipe, needs to be enclosed by quotes)
+- `}` (125) (not that harmful, but is it useful?)
+- `~` (126) (home directory, dangerous when first char)
