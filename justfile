@@ -1,6 +1,9 @@
 binary := "tidynames"
 
 default:
+	@just -l
+
+build:
     go build
 
 test:
