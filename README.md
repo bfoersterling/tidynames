@@ -4,6 +4,13 @@ Removes whitespace and non-ascii characters from file and directory names.
 
 ## installation
 
+Download the latest release
+```
+wget https://github.com/bfoersterling/tidynames/releases/latest/download/tidynames_linux_x86_64 -O /tmp/tidynames
+sudo install -v -m 755 /tmp/tidynames /usr/local/bin
+```
+
+Or build it.\
 Clone this repo and:
 ```
 sudo just install
