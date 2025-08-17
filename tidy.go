@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"os"
@@ -11,6 +12,32 @@ import (
 type replace_config struct {
 	nonascii   rune
 	whitespace rune
+}
+
+func (rc replace_config) tidy_bytes(name []byte) (proper_name []byte) {
+	var name_buffer bytes.Buffer
+
+	for _, r := range name {
+		if (32 < r) && (r < 127) {
+			name_buffer.WriteByte(r)
+			continue
+		}
+
+		if (r <= 32) && (rc.whitespace != 0) {
+			name_buffer.WriteByte(byte(rc.whitespace))
+			continue
+		}
+
+		if (r >= 127) && (rc.nonascii != 0) {
+			name_buffer.WriteByte(byte(rc.nonascii))
+		}
+	}
+
+	proper_name = name_buffer.Bytes()
+
+	proper_name = bytes.ToLower(proper_name)
+
+	return
 }
 
 func (rc replace_config) tidy_string(name string) (proper_name string) {

@@ -8,6 +8,55 @@ import (
 	"testing"
 )
 
+func Test_tidy_bytes(t *testing.T) {
+	// 1 - remove whitespace
+	rc := replace_config{}
+
+	input := []byte("Foo bar.txt")
+	expected_result := []byte("foobar.txt")
+	test_result := rc.tidy_bytes(input)
+
+	if bytes.Compare(test_result, expected_result) != 0 {
+		t.Fatalf("test_result and expected_result differ.\n"+
+			"test_result: %q\n"+
+			"expected_result: %q\n", test_result, expected_result)
+	}
+
+	// 2 - unicode character
+	input = []byte("\u2318foo bar.txt")
+	expected_result = []byte("foobar.txt")
+	test_result = rc.tidy_bytes(input)
+
+	if bytes.Compare(test_result, expected_result) != 0 {
+		t.Fatalf("%q should be converted to %q, but was converted to %q\n",
+			input, expected_result, test_result)
+	}
+
+	// 3 - replace whitespace with underscore
+	rc = replace_config{
+		whitespace: '_',
+	}
+
+	input = []byte("Foo bar.")
+	expected_result = []byte("foo_bar.")
+	test_result = rc.tidy_bytes(input)
+
+	if bytes.Compare(test_result, expected_result) != 0 {
+		t.Fatalf("%q should be converted to %q, but was converted to %q\n",
+			input, expected_result, test_result)
+	}
+}
+
+func Benchmark_tidy_bytes(b *testing.B) {
+	rc := replace_config{
+		whitespace: '_',
+	}
+
+	for i := 0; i < b.N; i++ {
+		rc.tidy_bytes([]byte("foo Bär.txt"))
+	}
+}
+
 func Test_tidy_string(t *testing.T) {
 	// 1 - remove whitespace
 	rc := replace_config{}
@@ -43,6 +92,16 @@ func Test_tidy_string(t *testing.T) {
 	if test_result != expected_result {
 		t.Fatalf("%q should be converted to %q, but was converted to %q\n",
 			input_string, expected_result, test_result)
+	}
+}
+
+func Benchmark_tidy_string(b *testing.B) {
+	rc := replace_config{
+		whitespace: '_',
+	}
+
+	for i := 0; i < b.N; i++ {
+		rc.tidy_string("foo Bär.txt")
 	}
 }
 
