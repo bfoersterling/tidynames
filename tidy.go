@@ -15,37 +15,26 @@ type replace_config struct {
 	whitespace rune
 }
 
-func (rc replace_config) tidy_bytes(name []byte) (proper_name []byte) {
-	var name_buffer bytes.Buffer
+func (rc replace_config) tidy_bytes(name []byte) []byte {
+	input_buffer := bytes.NewBuffer(name)
 
-	for _, r := range name {
+	result_buffer := bytes.NewBuffer([]byte(""))
+
+	input_buffer = replace_whitespace(input_buffer, rc.whitespace)
+
+	for _, r := range input_buffer.Bytes() {
+		// printable ascii characters
 		if (32 < r) && (r < 127) {
-			name_buffer.WriteByte(r)
-			continue
-		}
-
-		// whitespace
-		if (r <= 32) && (rc.whitespace != 0) {
-			name_buffer.WriteByte(byte(rc.whitespace))
+			result_buffer.WriteByte(r)
 			continue
 		}
 
 		if (r >= 127) && (rc.nonascii != 0) {
-			name_buffer.WriteByte(byte(rc.nonascii))
+			result_buffer.WriteByte(byte(rc.nonascii))
 		}
 	}
 
-	proper_name = name_buffer.Bytes()
-
-	if rc.whitespace != 0 {
-		proper_name = replace_whitespace(proper_name, rc.whitespace)
-	} else {
-		proper_name = replace_whitespace(proper_name, 0)
-	}
-
-	proper_name = bytes.ToLower(proper_name)
-
-	return
+	return bytes.ToLower(result_buffer.Bytes())
 }
 
 func (rc replace_config) tidy_string(name string) (proper_name string) {
@@ -132,7 +121,7 @@ func (rc replace_config) tidy_entries(args cli_args, entries []string, writer io
 
 // replace whitespace by substitute
 // but do not write consecutive substitute runes
-func replace_whitespace_buffer(name *bytes.Buffer, substitute rune) *bytes.Buffer {
+func replace_whitespace(name *bytes.Buffer, substitute rune) *bytes.Buffer {
 	result := bytes.NewBuffer([]byte(""))
 	substitute_written := false
 
@@ -153,7 +142,7 @@ func replace_whitespace_buffer(name *bytes.Buffer, substitute rune) *bytes.Buffe
 	return result
 }
 
-func replace_whitespace(name []byte, substitute rune) []byte {
+func replace_whitespace_fields(name []byte, substitute rune) []byte {
 	tokens := bytes.Fields(name)
 	var substitute_bytes []byte = []byte("")
 

@@ -170,13 +170,13 @@ func Test_tidy_entry(t *testing.T) {
 	}
 }
 
-func Test_replace_whitespace_buffer(t *testing.T) {
+func Test_replace_whitespace(t *testing.T) {
 	// 1
 	rc := replace_config{whitespace: '_'}
 
 	input := bytes.NewBuffer([]byte("foo\t  bar.txt"))
 	expected_result := bytes.NewBuffer([]byte("foo_bar.txt"))
-	test_result := replace_whitespace_buffer(input, rc.whitespace)
+	test_result := replace_whitespace(input, rc.whitespace)
 
 	if !bytes.Equal(test_result.Bytes(), expected_result.Bytes()) {
 		t.Fatalf("test_result.Bytes() and expected_result.Bytes() differ.\n"+
@@ -188,7 +188,7 @@ func Test_replace_whitespace_buffer(t *testing.T) {
 	rc = replace_config{whitespace: '_'}
 	input = bytes.NewBuffer([]byte("foo\t  bar \t foo.txt"))
 	expected_result = bytes.NewBuffer([]byte("foo_bar_foo.txt"))
-	test_result = replace_whitespace_buffer(input, rc.whitespace)
+	test_result = replace_whitespace(input, rc.whitespace)
 
 	if !bytes.Equal(test_result.Bytes(), expected_result.Bytes()) {
 		t.Fatalf("test_result.Bytes() and expected_result.Bytes() differ.\n"+
@@ -197,16 +197,16 @@ func Test_replace_whitespace_buffer(t *testing.T) {
 	}
 }
 
-func Benchmark_replace_whitespace_buffer(b *testing.B) {
+func Benchmark_replace_whitespace(b *testing.B) {
 	rc := replace_config{whitespace: '_'}
 	input := bytes.NewBuffer([]byte("foo\t  bar \t foo.txt"))
 
 	for i := b.N; i < b.N; i++ {
-		replace_whitespace_buffer(input, rc.whitespace)
+		replace_whitespace(input, rc.whitespace)
 	}
 }
 
-func Test_replace_whitespace(t *testing.T) {
+func Test_replace_whitespace_fields(t *testing.T) {
 	// 1
 	rc := replace_config{
 		whitespace: '_',
@@ -214,7 +214,7 @@ func Test_replace_whitespace(t *testing.T) {
 
 	input := []byte("foo\t  bar \t foo.txt")
 	expected_result := []byte("foo_bar_foo.txt")
-	test_result := replace_whitespace(input, rc.whitespace)
+	test_result := replace_whitespace_fields(input, rc.whitespace)
 
 	if !bytes.Equal(test_result, expected_result) {
 		t.Fatalf("test_result is %q, but should be %q.\n",
@@ -224,7 +224,7 @@ func Test_replace_whitespace(t *testing.T) {
 	// 2 - null rune value
 	input = []byte("foo\t  bar \t foo.txt")
 	expected_result = []byte("foobarfoo.txt")
-	test_result = replace_whitespace(input, 0)
+	test_result = replace_whitespace_fields(input, 0)
 
 	if !bytes.Equal(test_result, expected_result) {
 		t.Fatalf("test_result is %q, but should be %q.\n",
@@ -241,6 +241,6 @@ func Benchmark_tidy_substiutes_fields(b *testing.B) {
 	input := []byte("foo\t  bar \t foo.txt")
 
 	for i := 0; i < b.N; i++ {
-		replace_whitespace(input, rc.whitespace)
+		replace_whitespace_fields(input, rc.whitespace)
 	}
 }
