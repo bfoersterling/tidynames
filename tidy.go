@@ -130,6 +130,27 @@ func (rc replace_config) tidy_entries(args cli_args, entries []string, writer io
 	return
 }
 
+func replace_whitespace_buffer(name *bytes.Buffer, substitute rune) *bytes.Buffer {
+	result := bytes.NewBuffer([]byte(""))
+	substitute_written := false
+
+	for b, err := name.ReadByte(); err == nil; b, err = name.ReadByte() {
+		if !unicode.IsSpace(rune(b)) {
+			result.WriteByte(b)
+			substitute_written = false
+			continue
+		}
+
+		if unicode.IsSpace(rune(b)) && !substitute_written {
+			result.WriteByte(byte(substitute))
+			substitute_written = true
+			continue
+		}
+	}
+
+	return result
+}
+
 func replace_whitespace(name []byte, substitute rune) []byte {
 	tokens := bytes.Fields(name)
 	var substitute_bytes []byte = []byte("")
