@@ -130,6 +130,8 @@ func (rc replace_config) tidy_entries(args cli_args, entries []string, writer io
 	return
 }
 
+// replace whitespace by substitute
+// but do not write consecutive substitute runes
 func replace_whitespace_buffer(name *bytes.Buffer, substitute rune) *bytes.Buffer {
 	result := bytes.NewBuffer([]byte(""))
 	substitute_written := false
