@@ -18,23 +18,11 @@ type replace_config struct {
 func (rc replace_config) tidy_bytes(name []byte) []byte {
 	input_buffer := bytes.NewBuffer(name)
 
-	result_buffer := bytes.NewBuffer([]byte(""))
-
 	input_buffer = replace_whitespace(input_buffer, rc.whitespace)
 
-	for _, r := range input_buffer.Bytes() {
-		// printable ascii characters
-		if (32 < r) && (r < 127) {
-			result_buffer.WriteByte(r)
-			continue
-		}
+	input_buffer = remove_nonascii(input_buffer)
 
-		if (r >= 127) && (rc.nonascii != 0) {
-			result_buffer.WriteByte(byte(rc.nonascii))
-		}
-	}
-
-	return bytes.ToLower(result_buffer.Bytes())
+	return bytes.ToLower(input_buffer.Bytes())
 }
 
 func (rc replace_config) tidy_string(name string) (proper_name string) {
@@ -117,6 +105,20 @@ func (rc replace_config) tidy_entries(args cli_args, entries []string, writer io
 	}
 
 	return
+}
+
+// remove characters that are not ascii codes between 32 and 127
+func remove_nonascii(name *bytes.Buffer) *bytes.Buffer {
+	result := bytes.NewBuffer([]byte(""))
+
+	for b, err := name.ReadByte(); err == nil; b, err = name.ReadByte() {
+		// printable ascii characters
+		if (32 < b) && (b < 127) {
+			result.WriteByte(b)
+		}
+	}
+
+	return result
 }
 
 // replace whitespace by substitute

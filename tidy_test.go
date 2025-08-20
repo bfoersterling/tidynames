@@ -170,6 +170,27 @@ func Test_tidy_entry(t *testing.T) {
 	}
 }
 
+func Test_remove_nonascii(t *testing.T) {
+	// 1
+	input := bytes.NewBuffer([]byte("Löhne.txt"))
+	expected_result := bytes.NewBuffer([]byte("Lhne.txt"))
+	test_result := remove_nonascii(input)
+
+	if !bytes.Equal(test_result.Bytes(), expected_result.Bytes()) {
+		t.Fatalf("test_result and expected_result differ.\n"+
+			"test_result: %s\nexpected_result: %q\n",
+			test_result.Bytes(), expected_result.Bytes())
+	}
+}
+
+func Benchmark_remove_nonascii(b *testing.B) {
+	input := bytes.NewBuffer([]byte("Löhöhöhne.txt"))
+
+	for i := 0; i < b.N; i++ {
+		remove_nonascii(input)
+	}
+}
+
 func Test_replace_whitespace(t *testing.T) {
 	// 1
 	rc := replace_config{whitespace: '_'}
