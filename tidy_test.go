@@ -222,7 +222,7 @@ func Benchmark_replace_whitespace(b *testing.B) {
 	rc := replace_config{whitespace: '_'}
 	input := bytes.NewBuffer([]byte("foo\t  bar \t foo.txt"))
 
-	for i := b.N; i < b.N; i++ {
+	for i := 0; i < b.N; i++ {
 		replace_whitespace(input, rc.whitespace)
 	}
 }
