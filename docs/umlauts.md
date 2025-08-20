@@ -5,3 +5,5 @@
 When a bytes.Buffer is broken down to bytes \
 umlauts seem to be two bytes long.\
 An `ö` is `Ã` (195) + `¶` (182).
+
+You need to use `ReadRune()` instead of `ReadByte()`.
