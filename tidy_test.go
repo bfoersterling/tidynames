@@ -197,24 +197,24 @@ func Test_replace_whitespace(t *testing.T) {
 
 	input := bytes.NewBuffer([]byte("foo\t  bar.txt"))
 	expected_result := bytes.NewBuffer([]byte("foo_bar.txt"))
-	test_result := replace_whitespace(input, rc.whitespace)
+	replace_whitespace(input, rc.whitespace)
 
-	if !bytes.Equal(test_result.Bytes(), expected_result.Bytes()) {
-		t.Fatalf("test_result.Bytes() and expected_result.Bytes() differ.\n"+
-			"test_result.Bytes(): %s\nexpected_result.Bytes(): %s\n",
-			test_result.Bytes(), expected_result.Bytes())
+	if !bytes.Equal(input.Bytes(), expected_result.Bytes()) {
+		t.Fatalf("input.Bytes() and expected_result.Bytes() differ.\n"+
+			"input.Bytes(): %s\nexpected_result.Bytes(): %s\n",
+			input.Bytes(), expected_result.Bytes())
 	}
 
 	// 2
 	rc = replace_config{whitespace: '_'}
 	input = bytes.NewBuffer([]byte("foo\t  bar \t foo.txt"))
 	expected_result = bytes.NewBuffer([]byte("foo_bar_foo.txt"))
-	test_result = replace_whitespace(input, rc.whitespace)
+	replace_whitespace(input, rc.whitespace)
 
-	if !bytes.Equal(test_result.Bytes(), expected_result.Bytes()) {
-		t.Fatalf("test_result.Bytes() and expected_result.Bytes() differ.\n"+
-			"test_result.Bytes(): %s\nexpected_result.Bytes(): %s\n",
-			test_result.Bytes(), expected_result.Bytes())
+	if !bytes.Equal(input.Bytes(), expected_result.Bytes()) {
+		t.Fatalf("input.Bytes() and expected_result.Bytes() differ.\n"+
+			"input.Bytes(): %s\nexpected_result.Bytes(): %s\n",
+			input.Bytes(), expected_result.Bytes())
 	}
 }
 

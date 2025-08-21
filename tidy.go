@@ -18,7 +18,7 @@ type replace_config struct {
 func (rc replace_config) tidy_bytes(name []byte) []byte {
 	input_buffer := bytes.NewBuffer(name)
 
-	input_buffer = replace_whitespace(input_buffer, rc.whitespace)
+	replace_whitespace(input_buffer, rc.whitespace)
 
 	remove_nonascii(input_buffer)
 
@@ -123,25 +123,24 @@ func remove_nonascii(name *bytes.Buffer) {
 
 // replace whitespace by substitute
 // but do not write consecutive substitute runes
-func replace_whitespace(name *bytes.Buffer, substitute rune) *bytes.Buffer {
-	result := bytes.NewBuffer([]byte(""))
+func replace_whitespace(name *bytes.Buffer, substitute rune) {
+	name_copy := name.Bytes()
 	substitute_written := false
+	name.Reset()
 
-	for b, err := name.ReadByte(); err == nil; b, err = name.ReadByte() {
+	for _, b := range name_copy {
 		if !unicode.IsSpace(rune(b)) {
-			result.WriteByte(b)
+			name.WriteByte(b)
 			substitute_written = false
 			continue
 		}
 
 		if unicode.IsSpace(rune(b)) && !substitute_written {
-			result.WriteByte(byte(substitute))
+			name.WriteByte(byte(substitute))
 			substitute_written = true
 			continue
 		}
 	}
-
-	return result
 }
 
 func replace_whitespace_fields(name []byte, substitute rune) []byte {
