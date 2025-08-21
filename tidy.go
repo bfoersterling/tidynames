@@ -109,14 +109,14 @@ func (rc replace_config) tidy_entries(args cli_args, entries []string, writer io
 
 // remove characters that are not ascii codes between 32 and 127
 func remove_nonascii(name *bytes.Buffer) {
-	name_copy := name.String()
+	name_copy := name.Bytes()
 
 	name.Reset()
 
-	for _, r := range name_copy {
+	for _, b := range name_copy {
 		// printable ascii characters
-		if (32 < r) && (r < 127) {
-			name.WriteRune(r)
+		if (32 < b) && (b < 127) {
+			name.WriteByte(b)
 		}
 	}
 }
