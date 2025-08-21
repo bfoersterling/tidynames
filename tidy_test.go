@@ -169,3 +169,99 @@ func Test_tidy_entry(t *testing.T) {
 			"test_buf.String():\n%v\n", test_buf.String())
 	}
 }
+
+func Test_remove_nonascii(t *testing.T) {
+	// 1
+	input := bytes.NewBuffer([]byte("Löhne.txt"))
+	expected_result := bytes.NewBuffer([]byte("Lhne.txt"))
+	remove_nonascii(input)
+
+	if !bytes.Equal(input.Bytes(), expected_result.Bytes()) {
+		t.Fatalf("input and expected_result differ.\n"+
+			"input.Bytes(): %s\nexpected_result.Bytes(): %q\n",
+			input.Bytes(), expected_result.Bytes())
+	}
+}
+
+func Benchmark_remove_nonascii(b *testing.B) {
+	input := bytes.NewBuffer([]byte("Löhöhöhne.txt"))
+
+	for i := 0; i < b.N; i++ {
+		remove_nonascii(input)
+	}
+}
+
+func Test_replace_whitespace(t *testing.T) {
+	// 1
+	rc := replace_config{whitespace: '_'}
+
+	input := bytes.NewBuffer([]byte("foo\t  bar.txt"))
+	expected_result := bytes.NewBuffer([]byte("foo_bar.txt"))
+	replace_whitespace(input, rc.whitespace)
+
+	if !bytes.Equal(input.Bytes(), expected_result.Bytes()) {
+		t.Fatalf("input.Bytes() and expected_result.Bytes() differ.\n"+
+			"input.Bytes(): %s\nexpected_result.Bytes(): %s\n",
+			input.Bytes(), expected_result.Bytes())
+	}
+
+	// 2
+	rc = replace_config{whitespace: '_'}
+	input = bytes.NewBuffer([]byte("foo\t  bar \t foo.txt"))
+	expected_result = bytes.NewBuffer([]byte("foo_bar_foo.txt"))
+	replace_whitespace(input, rc.whitespace)
+
+	if !bytes.Equal(input.Bytes(), expected_result.Bytes()) {
+		t.Fatalf("input.Bytes() and expected_result.Bytes() differ.\n"+
+			"input.Bytes(): %s\nexpected_result.Bytes(): %s\n",
+			input.Bytes(), expected_result.Bytes())
+	}
+}
+
+func Benchmark_replace_whitespace(b *testing.B) {
+	rc := replace_config{whitespace: '_'}
+	input := bytes.NewBuffer([]byte("foo\t  bar \t foo.txt"))
+
+	for i := 0; i < b.N; i++ {
+		replace_whitespace(input, rc.whitespace)
+	}
+}
+
+func Test_replace_whitespace_fields(t *testing.T) {
+	// 1
+	rc := replace_config{
+		whitespace: '_',
+	}
+
+	input := []byte("foo\t  bar \t foo.txt")
+	expected_result := []byte("foo_bar_foo.txt")
+	test_result := replace_whitespace_fields(input, rc.whitespace)
+
+	if !bytes.Equal(test_result, expected_result) {
+		t.Fatalf("test_result is %q, but should be %q.\n",
+			test_result, expected_result)
+	}
+
+	// 2 - null rune value
+	input = []byte("foo\t  bar \t foo.txt")
+	expected_result = []byte("foobarfoo.txt")
+	test_result = replace_whitespace_fields(input, 0)
+
+	if !bytes.Equal(test_result, expected_result) {
+		t.Fatalf("test_result is %q, but should be %q.\n",
+			test_result, expected_result)
+	}
+}
+
+func Benchmark_tidy_substiutes_fields(b *testing.B) {
+	// 1
+	rc := replace_config{
+		whitespace: '_',
+	}
+
+	input := []byte("foo\t  bar \t foo.txt")
+
+	for i := 0; i < b.N; i++ {
+		replace_whitespace_fields(input, rc.whitespace)
+	}
+}

@@ -7,6 +7,7 @@ import (
 	"os"
 	"path"
 	"strings"
+	"unicode"
 )
 
 type replace_config struct {
@@ -14,30 +15,14 @@ type replace_config struct {
 	whitespace rune
 }
 
-func (rc replace_config) tidy_bytes(name []byte) (proper_name []byte) {
-	var name_buffer bytes.Buffer
+func (rc replace_config) tidy_bytes(name []byte) []byte {
+	input_buffer := bytes.NewBuffer(name)
 
-	for _, r := range name {
-		if (32 < r) && (r < 127) {
-			name_buffer.WriteByte(r)
-			continue
-		}
+	replace_whitespace(input_buffer, rc.whitespace)
 
-		if (r <= 32) && (rc.whitespace != 0) {
-			name_buffer.WriteByte(byte(rc.whitespace))
-			continue
-		}
+	remove_nonascii(input_buffer)
 
-		if (r >= 127) && (rc.nonascii != 0) {
-			name_buffer.WriteByte(byte(rc.nonascii))
-		}
-	}
-
-	proper_name = name_buffer.Bytes()
-
-	proper_name = bytes.ToLower(proper_name)
-
-	return
+	return bytes.ToLower(input_buffer.Bytes())
 }
 
 func (rc replace_config) tidy_string(name string) (proper_name string) {
@@ -120,4 +105,51 @@ func (rc replace_config) tidy_entries(args cli_args, entries []string, writer io
 	}
 
 	return
+}
+
+// remove characters that are not ascii codes between 32 and 127
+func remove_nonascii(name *bytes.Buffer) {
+	name_copy := name.Bytes()
+
+	name.Reset()
+
+	for _, b := range name_copy {
+		// printable ascii characters
+		if (32 < b) && (b < 127) {
+			name.WriteByte(b)
+		}
+	}
+}
+
+// replace whitespace by substitute
+// but do not write consecutive substitute runes
+func replace_whitespace(name *bytes.Buffer, substitute rune) {
+	name_copy := name.Bytes()
+	substitute_written := false
+	name.Reset()
+
+	for _, b := range name_copy {
+		if !unicode.IsSpace(rune(b)) {
+			name.WriteByte(b)
+			substitute_written = false
+			continue
+		}
+
+		if unicode.IsSpace(rune(b)) && !substitute_written {
+			name.WriteByte(byte(substitute))
+			substitute_written = true
+			continue
+		}
+	}
+}
+
+func replace_whitespace_fields(name []byte, substitute rune) []byte {
+	tokens := bytes.Fields(name)
+	var substitute_bytes []byte = []byte("")
+
+	if substitute != 0 && !unicode.IsSpace(substitute) {
+		substitute_bytes = append(substitute_bytes, byte(substitute))
+	}
+
+	return bytes.Join(tokens, substitute_bytes)
 }
