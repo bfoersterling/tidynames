@@ -174,12 +174,12 @@ func Test_remove_nonascii(t *testing.T) {
 	// 1
 	input := bytes.NewBuffer([]byte("Löhne.txt"))
 	expected_result := bytes.NewBuffer([]byte("Lhne.txt"))
-	test_result := remove_nonascii(input)
+	remove_nonascii(input)
 
-	if !bytes.Equal(test_result.Bytes(), expected_result.Bytes()) {
-		t.Fatalf("test_result and expected_result differ.\n"+
-			"test_result: %s\nexpected_result: %q\n",
-			test_result.Bytes(), expected_result.Bytes())
+	if !bytes.Equal(input.Bytes(), expected_result.Bytes()) {
+		t.Fatalf("input and expected_result differ.\n"+
+			"input.Bytes(): %s\nexpected_result.Bytes(): %q\n",
+			input.Bytes(), expected_result.Bytes())
 	}
 }
 

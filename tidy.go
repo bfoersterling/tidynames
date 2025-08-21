@@ -20,7 +20,7 @@ func (rc replace_config) tidy_bytes(name []byte) []byte {
 
 	input_buffer = replace_whitespace(input_buffer, rc.whitespace)
 
-	input_buffer = remove_nonascii(input_buffer)
+	remove_nonascii(input_buffer)
 
 	return bytes.ToLower(input_buffer.Bytes())
 }
@@ -108,17 +108,17 @@ func (rc replace_config) tidy_entries(args cli_args, entries []string, writer io
 }
 
 // remove characters that are not ascii codes between 32 and 127
-func remove_nonascii(name *bytes.Buffer) *bytes.Buffer {
-	result := bytes.NewBuffer([]byte(""))
+func remove_nonascii(name *bytes.Buffer) {
+	name_copy := name.String()
 
-	for b, err := name.ReadByte(); err == nil; b, err = name.ReadByte() {
+	name.Reset()
+
+	for _, r := range name_copy {
 		// printable ascii characters
-		if (32 < b) && (b < 127) {
-			result.WriteByte(b)
+		if (32 < r) && (r < 127) {
+			name.WriteRune(r)
 		}
 	}
-
-	return result
 }
 
 // replace whitespace by substitute
