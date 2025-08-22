@@ -135,6 +135,11 @@ func replace_whitespace(name *bytes.Buffer, substitute rune) {
 			continue
 		}
 
+		// don't write substitute at beginning of the file name
+		if name.Len() == 0 {
+			continue
+		}
+
 		if unicode.IsSpace(rune(b)) && !substitute_written {
 			name.WriteByte(byte(substitute))
 			substitute_written = true

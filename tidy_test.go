@@ -216,6 +216,18 @@ func Test_replace_whitespace(t *testing.T) {
 			"input.Bytes(): %s\nexpected_result.Bytes(): %s\n",
 			input.Bytes(), expected_result.Bytes())
 	}
+
+	// 3 - file names should not start with a replacement character
+	rc = replace_config{whitespace: '_'}
+	input = bytes.NewBuffer([]byte("\t  bar \t foo.txt"))
+	expected_result = bytes.NewBuffer([]byte("bar_foo.txt"))
+	replace_whitespace(input, rc.whitespace)
+
+	if !bytes.Equal(input.Bytes(), expected_result.Bytes()) {
+		t.Fatalf("input.Bytes() and expected_result.Bytes() differ.\n"+
+			"input.Bytes(): %s\nexpected_result.Bytes(): %s\n",
+			input.Bytes(), expected_result.Bytes())
+	}
 }
 
 func Benchmark_replace_whitespace(b *testing.B) {
