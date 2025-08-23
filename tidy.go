@@ -20,6 +20,8 @@ func (rc replace_config) tidy_bytes(name []byte) []byte {
 
 	replace_whitespace(input_buffer, rc.whitespace)
 
+	replace_umlauts(input_buffer)
+
 	remove_nonascii(input_buffer)
 
 	remove_special_chars(input_buffer)
@@ -139,7 +141,7 @@ func remove_special_chars(name *bytes.Buffer) {
 
 // only replaces lower case umlauts
 // upper case umlauts should be converted by bytes.Lower() previously
-func replace_umlauts(name *bytes.Buffer, substitute rune) {
+func replace_umlauts(name *bytes.Buffer) {
 	name_copy := name.String()
 	name.Reset()
 

@@ -217,7 +217,7 @@ func Test_replace_umlauts(t *testing.T) {
 	input := bytes.NewBuffer([]byte("überflüssig.txt"))
 	expected_result := bytes.NewBuffer([]byte("ueberfluessig.txt"))
 
-	replace_umlauts(input, '_')
+	replace_umlauts(input)
 
 	if !bytes.Equal(input.Bytes(), expected_result.Bytes()) {
 		t.Fatalf("input.Bytes and expected_result.Bytes() differ.\n"+
