@@ -115,8 +115,9 @@ func (tc tidy_config) removal_stage(name *bytes.Buffer) {
 
 	name.Reset()
 
-	for i, r := range name_copy {
-		if i == 0 && r == tc.replacement_char {
+	for _, r := range name_copy {
+		// don't write replacement char at beginning of name
+		if r == tc.replacement_char && name.Len() == 0 {
 			continue
 		}
 

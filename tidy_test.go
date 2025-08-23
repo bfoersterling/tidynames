@@ -183,6 +183,19 @@ func Test_removal_stage(t *testing.T) {
 			"input.Bytes(): %s\nexpected_result.Bytes(): %q\n",
 			input.Bytes(), expected_result.Bytes())
 	}
+
+	// 2 - multiple replacement chars at start of name
+	input = bytes.NewBuffer([]byte("___hne.txt"))
+	expected_result = bytes.NewBuffer([]byte("hne.txt"))
+	tc = tidy_config{replacement_char: '_'}
+
+	tc.removal_stage(input)
+
+	if !bytes.Equal(input.Bytes(), expected_result.Bytes()) {
+		t.Fatalf("input and expected_result differ.\n"+
+			"input.Bytes(): %s\nexpected_result.Bytes(): %q\n",
+			input.Bytes(), expected_result.Bytes())
+	}
 }
 
 func Test_remove_nonascii(t *testing.T) {
