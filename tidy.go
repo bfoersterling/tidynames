@@ -22,9 +22,7 @@ func (rc replace_config) tidy_bytes(name []byte) []byte {
 
 	replace_umlauts(input_buffer)
 
-	remove_nonascii(input_buffer)
-
-	remove_special_chars(input_buffer)
+	rc.removal_stage(input_buffer)
 
 	return input_buffer.Bytes()
 }
@@ -109,6 +107,30 @@ func (rc replace_config) tidy_entries(args cli_args, entries []string, writer io
 	}
 
 	return
+}
+
+func (rc replace_config) removal_stage(name *bytes.Buffer) {
+	name_copy := name.String()
+
+	rt := get_whitelist_rt()
+
+	name.Reset()
+
+	for i, r := range name_copy {
+		if i == 0 && r == rc.whitespace {
+			continue
+		}
+
+		if (r == rc.whitespace) &&
+			(get_last_rune_from_bytes(name.Bytes()) == rc.whitespace) {
+			continue
+		}
+
+		if unicode.In(r, &rt) {
+			name.WriteRune(r)
+			continue
+		}
+	}
 }
 
 // remove characters that are not ascii codes between 32 and 127
