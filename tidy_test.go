@@ -170,6 +170,21 @@ func Test_tidy_entry(t *testing.T) {
 	}
 }
 
+func Test_removal_stage(t *testing.T) {
+	// 1
+	input := bytes.NewBuffer([]byte("l_ö_hne.txt"))
+	expected_result := bytes.NewBuffer([]byte("l_hne.txt"))
+	tc := tidy_config{replacement_char: '_'}
+
+	tc.removal_stage(input)
+
+	if !bytes.Equal(input.Bytes(), expected_result.Bytes()) {
+		t.Fatalf("input and expected_result differ.\n"+
+			"input.Bytes(): %s\nexpected_result.Bytes(): %q\n",
+			input.Bytes(), expected_result.Bytes())
+	}
+}
+
 func Test_remove_nonascii(t *testing.T) {
 	// 1
 	input := bytes.NewBuffer([]byte("Löhne.txt"))
