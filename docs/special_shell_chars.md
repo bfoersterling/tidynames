@@ -15,8 +15,11 @@ Characters that should not be allowed in file names:
 Should be allowed, but maybe not as the first character:
 - `-` (45)
 
+Should be allowed:
+- `.` (46)
+
 Should not be allowed:
-- `/` (46) (part of paths)
+- `/` (47) (part of paths)
 
 48-57 are numbers and should be allowed.
 
