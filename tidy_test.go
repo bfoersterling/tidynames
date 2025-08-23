@@ -225,6 +225,14 @@ func Test_replace_umlauts(t *testing.T) {
 	}
 }
 
+func Benchmark_replace_umlauts(b *testing.B) {
+	input := bytes.NewBuffer([]byte("überflüssig.txt"))
+
+	for i := 0; i < b.N; i++ {
+		replace_umlauts(input)
+	}
+}
+
 func Test_replace_whitespace(t *testing.T) {
 	// 1
 	rc := replace_config{whitespace: '_'}
