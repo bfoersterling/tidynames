@@ -170,6 +170,30 @@ func replace_whitespace(name *bytes.Buffer, substitute rune) {
 	}
 }
 
+func replace_umlauts(name *bytes.Buffer, substitute rune) {
+	name_copy := name.String()
+	name.Reset()
+
+	for _, r := range name_copy {
+		if r == 228 {
+			name.WriteString("ae")
+			continue
+		}
+
+		if r == 246 {
+			name.WriteString("oe")
+			continue
+		}
+
+		if r == 252 {
+			name.WriteString("ue")
+			continue
+		}
+
+		name.WriteRune(r)
+	}
+}
+
 func replace_whitespace_fields(name []byte, substitute rune) []byte {
 	tokens := bytes.Fields(name)
 	var substitute_bytes []byte = []byte("")
