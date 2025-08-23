@@ -30,7 +30,7 @@ func Test_peek_byte_1(t *testing.T) {
 	}
 }
 
-func Benchmark_peek_bytes_1(b *testing.B) {
+func Benchmark_peek_byte_1(b *testing.B) {
 	test_buffer := bytes.NewBuffer([]byte("foobar.txt"))
 
 	for i := 0; i < b.N; i++ {
@@ -63,7 +63,7 @@ func Test_peek_byte_2(t *testing.T) {
 	}
 }
 
-func Benchmark_peek_bytes_2(b *testing.B) {
+func Benchmark_peek_byte_2(b *testing.B) {
 	test_buffer := bytes.NewBuffer([]byte("foobar.txt"))
 
 	for i := 0; i < b.N; i++ {
