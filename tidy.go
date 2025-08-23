@@ -22,6 +22,8 @@ func (rc replace_config) tidy_bytes(name []byte) []byte {
 
 	remove_nonascii(input_buffer)
 
+	remove_special_chars(input_buffer)
+
 	return bytes.ToLower(input_buffer.Bytes())
 }
 
@@ -117,6 +119,20 @@ func remove_nonascii(name *bytes.Buffer) {
 		// printable ascii characters
 		if (32 < b) && (b < 127) {
 			name.WriteByte(b)
+		}
+	}
+}
+
+func remove_special_chars(name *bytes.Buffer) {
+	name_copy := name.String()
+
+	rt := get_special_char_rt()
+
+	name.Reset()
+
+	for _, r := range name_copy {
+		if !unicode.In(r, &rt) {
+			name.WriteRune(r)
 		}
 	}
 }
