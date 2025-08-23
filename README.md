@@ -1,6 +1,10 @@
 # tidynames
 
-Removes whitespace and non-ascii characters from file and directory names.
+Opinionated file and directory renamer with dry run option.
+- replaces whitespace by non consecutive `_`s
+- removes non-ascii characters
+- removes special shell characters and characters unsuited for naming entries
+- converts to lowercase
 
 ## installation
 
@@ -39,10 +43,6 @@ $ tidynames *
 
 ## TODO
 
-- consistent way of removing chars (RangeTables vs. raw bytes/runes)
-- combine remove_nonascii() and remove_special_chars() into a removal stage \
-that works with a RangeTable for characters that are allowed
-- fix removal stage to not write consecutive replacement characters
 - implement option `-r` to rename entire dir recursively
 => complex feature - need to take renamed parent dirs into account before traversing down
 - options to replace whitespace or non-ascii chars with specific chars
