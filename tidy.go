@@ -127,6 +127,8 @@ func (tc tidy_config) removal_stage(name *bytes.Buffer) {
 			continue
 		}
 
+		// TODO: don't write replacement char before periods
+
 		if unicode.In(r, &rt) {
 			name.WriteRune(r)
 			continue
