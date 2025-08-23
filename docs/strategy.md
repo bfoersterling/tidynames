@@ -19,3 +19,5 @@ replacement characters
 - remove non-ascii characters
 - remove shell characters that have a special meaning
 - remove characters that are not suitable for file names
+
+The removal stage could be done entirely with a RangeTable.
