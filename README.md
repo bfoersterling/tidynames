@@ -42,6 +42,7 @@ $ tidynames *
 - consistent way of removing chars (RangeTables vs. raw bytes/runes)
 - combine remove_nonascii() and remove_special_chars() into a removal stage \
 that works with a RangeTable for characters that are allowed
+- fix removal stage to not write consecutive replacement characters
 - implement option `-r` to rename entire dir recursively
 => complex feature - need to take renamed parent dirs into account before traversing down
 - options to replace whitespace or non-ascii chars with specific chars
