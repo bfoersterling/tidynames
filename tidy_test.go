@@ -183,6 +183,14 @@ func Test_remove_nonascii(t *testing.T) {
 	}
 }
 
+func Benchmark_remove_nonascii(b *testing.B) {
+	input := bytes.NewBuffer([]byte("Löhöhöhne.txt"))
+
+	for i := 0; i < b.N; i++ {
+		remove_nonascii(input)
+	}
+}
+
 func Test_remove_special_chars(t *testing.T) {
 	// 1
 	input := bytes.NewBuffer([]byte("wei,rd!file.txt"))
@@ -196,11 +204,11 @@ func Test_remove_special_chars(t *testing.T) {
 	}
 }
 
-func Benchmark_remove_nonascii(b *testing.B) {
-	input := bytes.NewBuffer([]byte("Löhöhöhne.txt"))
+func Benchmark_remove_special_chars(b *testing.B) {
+	input := bytes.NewBuffer([]byte("wei,rd!file.txt"))
 
 	for i := 0; i < b.N; i++ {
-		remove_nonascii(input)
+		remove_special_chars(input)
 	}
 }
 
