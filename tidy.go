@@ -121,6 +121,7 @@ func (tc tidy_config) removal_stage(name *bytes.Buffer) {
 			continue
 		}
 
+		// don't write consecutive replacement chars
 		if (r == tc.replacement_char) &&
 			(get_last_rune_from_bytes(name.Bytes()) == tc.replacement_char) {
 			continue
