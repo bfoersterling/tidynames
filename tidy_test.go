@@ -214,8 +214,8 @@ func Benchmark_remove_special_chars(b *testing.B) {
 
 func Test_replace_umlauts(t *testing.T) {
 	// 1
-	input := bytes.NewBuffer([]byte("Überflüssig.txt"))
-	expected_result := bytes.NewBuffer([]byte("Ueberfluessig.txt"))
+	input := bytes.NewBuffer([]byte("überflüssig.txt"))
+	expected_result := bytes.NewBuffer([]byte("ueberfluessig.txt"))
 
 	replace_umlauts(input, '_')
 
