@@ -10,37 +10,36 @@ import (
 	"unicode"
 )
 
-type replace_config struct {
-	nonascii   rune
-	whitespace rune
+type tidy_config struct {
+	replacement_char rune
 }
 
-func (rc replace_config) tidy_bytes(name []byte) []byte {
+func (tc tidy_config) tidy_bytes(name []byte) []byte {
 	input_buffer := bytes.NewBuffer(bytes.ToLower(name))
 
-	replace_whitespace(input_buffer, rc.whitespace)
+	replace_whitespace(input_buffer, tc.replacement_char)
 
 	replace_umlauts(input_buffer)
 
-	rc.removal_stage(input_buffer)
+	tc.removal_stage(input_buffer)
 
 	return input_buffer.Bytes()
 }
 
-func (rc replace_config) tidy_string(name string) (proper_name string) {
+func (tc tidy_config) tidy_string(name string) (proper_name string) {
 	for _, r := range name {
 		if (32 < r) && (r < 127) {
 			proper_name += string(r)
 			continue
 		}
 
-		if (r <= 32) && (rc.whitespace != 0) {
-			proper_name += string(rc.whitespace)
+		if (r <= 32) && (tc.replacement_char != 0) {
+			proper_name += string(tc.replacement_char)
 			continue
 		}
 
-		if (r >= 127) && (rc.nonascii != 0) {
-			proper_name += string(rc.nonascii)
+		if (r >= 127) && (tc.replacement_char != 0) {
+			proper_name += string(tc.replacement_char)
 		}
 	}
 
@@ -49,8 +48,8 @@ func (rc replace_config) tidy_string(name string) (proper_name string) {
 	return
 }
 
-func (rc replace_config) tidy_entry(entry_path string, dry_run bool, writer io.Writer) (err error) {
-	new_name := rc.tidy_bytes([]byte(path.Base(entry_path)))
+func (tc tidy_config) tidy_entry(entry_path string, dry_run bool, writer io.Writer) (err error) {
+	new_name := tc.tidy_bytes([]byte(path.Base(entry_path)))
 
 	// trailing slashes will cause path.Base to not return the parent dir
 	entry_path = strings.TrimRight(entry_path, "/")
@@ -81,7 +80,7 @@ func (rc replace_config) tidy_entry(entry_path string, dry_run bool, writer io.W
 	return
 }
 
-func (rc replace_config) tidy_entries(args cli_args, entries []string, writer io.Writer) (err error) {
+func (tc tidy_config) tidy_entries(args cli_args, entries []string, writer io.Writer) (err error) {
 	// this var will only be needed if "." was passed to tidynames
 	var dir_entries []os.DirEntry
 
@@ -100,7 +99,7 @@ func (rc replace_config) tidy_entries(args cli_args, entries []string, writer io
 	}
 
 	for _, arg := range entries {
-		tidy_err := rc.tidy_entry(arg, args.dry_run, os.Stdout)
+		tidy_err := tc.tidy_entry(arg, args.dry_run, os.Stdout)
 		if tidy_err != nil {
 			fmt.Printf("%v", tidy_err)
 		}
@@ -109,7 +108,7 @@ func (rc replace_config) tidy_entries(args cli_args, entries []string, writer io
 	return
 }
 
-func (rc replace_config) removal_stage(name *bytes.Buffer) {
+func (tc tidy_config) removal_stage(name *bytes.Buffer) {
 	name_copy := name.String()
 
 	rt := get_whitelist_rt()
@@ -117,12 +116,12 @@ func (rc replace_config) removal_stage(name *bytes.Buffer) {
 	name.Reset()
 
 	for i, r := range name_copy {
-		if i == 0 && r == rc.whitespace {
+		if i == 0 && r == tc.replacement_char {
 			continue
 		}
 
-		if (r == rc.whitespace) &&
-			(get_last_rune_from_bytes(name.Bytes()) == rc.whitespace) {
+		if (r == tc.replacement_char) &&
+			(get_last_rune_from_bytes(name.Bytes()) == tc.replacement_char) {
 			continue
 		}
 
@@ -188,8 +187,8 @@ func replace_umlauts(name *bytes.Buffer) {
 	}
 }
 
-// replace whitespace by substitute
-// but do not write consecutive substitute runes
+// replace whitespace by replacement char
+// but do not write consecutive replacement chars
 func replace_whitespace(name *bytes.Buffer, substitute rune) {
 	name_copy := name.Bytes()
 	name.Reset()

@@ -10,11 +10,11 @@ import (
 
 func Test_tidy_bytes(t *testing.T) {
 	// 1 - remove whitespace
-	rc := replace_config{}
+	tc := tidy_config{}
 
 	input := []byte("Foo bar.txt")
 	expected_result := []byte("foobar.txt")
-	test_result := rc.tidy_bytes(input)
+	test_result := tc.tidy_bytes(input)
 
 	if bytes.Compare(test_result, expected_result) != 0 {
 		t.Fatalf("test_result and expected_result differ.\n"+
@@ -25,7 +25,7 @@ func Test_tidy_bytes(t *testing.T) {
 	// 2 - unicode character
 	input = []byte("\u2318foo bar.txt")
 	expected_result = []byte("foobar.txt")
-	test_result = rc.tidy_bytes(input)
+	test_result = tc.tidy_bytes(input)
 
 	if bytes.Compare(test_result, expected_result) != 0 {
 		t.Fatalf("%q should be converted to %q, but was converted to %q\n",
@@ -33,13 +33,13 @@ func Test_tidy_bytes(t *testing.T) {
 	}
 
 	// 3 - replace whitespace with underscore
-	rc = replace_config{
-		whitespace: '_',
+	tc = tidy_config{
+		replacement_char: '_',
 	}
 
 	input = []byte("Foo bar.")
 	expected_result = []byte("foo_bar.")
-	test_result = rc.tidy_bytes(input)
+	test_result = tc.tidy_bytes(input)
 
 	if bytes.Compare(test_result, expected_result) != 0 {
 		t.Fatalf("%q should be converted to %q, but was converted to %q\n",
@@ -48,22 +48,22 @@ func Test_tidy_bytes(t *testing.T) {
 }
 
 func Benchmark_tidy_bytes(b *testing.B) {
-	rc := replace_config{
-		whitespace: '_',
+	tc := tidy_config{
+		replacement_char: '_',
 	}
 
 	for i := 0; i < b.N; i++ {
-		rc.tidy_bytes([]byte("foo Bär.txt"))
+		tc.tidy_bytes([]byte("foo Bär.txt"))
 	}
 }
 
 func Test_tidy_string(t *testing.T) {
 	// 1 - remove whitespace
-	rc := replace_config{}
+	tc := tidy_config{}
 
 	input_string := "Foo bar."
 	expected_result := "foobar."
-	test_result := rc.tidy_string(input_string)
+	test_result := tc.tidy_string(input_string)
 
 	if test_result != expected_result {
 		t.Fatalf("%q should be converted to %q, but was converted to %q\n",
@@ -73,7 +73,7 @@ func Test_tidy_string(t *testing.T) {
 	// 2 - unicode character
 	input_string = "\u2318foo bar.txt"
 	expected_result = "foobar.txt"
-	test_result = rc.tidy_string(input_string)
+	test_result = tc.tidy_string(input_string)
 
 	if test_result != expected_result {
 		t.Fatalf("%q should be converted to %q, but was converted to %q\n",
@@ -81,13 +81,13 @@ func Test_tidy_string(t *testing.T) {
 	}
 
 	// 3 - replace whitespace with underscore
-	rc = replace_config{
-		whitespace: '_',
+	tc = tidy_config{
+		replacement_char: '_',
 	}
 
 	input_string = "Foo bar."
 	expected_result = "foo_bar."
-	test_result = rc.tidy_string(input_string)
+	test_result = tc.tidy_string(input_string)
 
 	if test_result != expected_result {
 		t.Fatalf("%q should be converted to %q, but was converted to %q\n",
@@ -96,18 +96,18 @@ func Test_tidy_string(t *testing.T) {
 }
 
 func Benchmark_tidy_string(b *testing.B) {
-	rc := replace_config{
-		whitespace: '_',
+	tc := tidy_config{
+		replacement_char: '_',
 	}
 
 	for i := 0; i < b.N; i++ {
-		rc.tidy_string("foo Bär.txt")
+		tc.tidy_string("foo Bär.txt")
 	}
 }
 
 func Test_tidy_entry(t *testing.T) {
 	// 1 - tidy absolute path
-	rc := replace_config{}
+	tc := tidy_config{}
 
 	tmp_dir := t.TempDir()
 
@@ -119,10 +119,10 @@ func Test_tidy_entry(t *testing.T) {
 		t.Fatalf("Creating temp file failed!\n")
 	}
 
-	err = rc.tidy_entry(tmp_file.Name(), false, &test_buf)
+	err = tc.tidy_entry(tmp_file.Name(), false, &test_buf)
 
 	if err != nil {
-		t.Fatalf("rc.tidy_entry failed with err:\n"+
+		t.Fatalf("tc.tidy_entry failed with err:\n"+
 			"%v\n", err)
 	}
 
@@ -150,10 +150,10 @@ func Test_tidy_entry(t *testing.T) {
 		t.Fatalf("Creating temp file failed!\n")
 	}
 
-	err = rc.tidy_entry(path.Base(tmp_file.Name()), false, &test_buf)
+	err = tc.tidy_entry(path.Base(tmp_file.Name()), false, &test_buf)
 
 	if err != nil {
-		t.Fatalf("rc.tidy_entry failed with err:\n"+
+		t.Fatalf("tc.tidy_entry failed with err:\n"+
 			"%v\n", err)
 	}
 
@@ -235,11 +235,11 @@ func Benchmark_replace_umlauts(b *testing.B) {
 
 func Test_replace_whitespace(t *testing.T) {
 	// 1
-	rc := replace_config{whitespace: '_'}
+	tc := tidy_config{replacement_char: '_'}
 
 	input := bytes.NewBuffer([]byte("foo\t  bar.txt"))
 	expected_result := bytes.NewBuffer([]byte("foo_bar.txt"))
-	replace_whitespace(input, rc.whitespace)
+	replace_whitespace(input, tc.replacement_char)
 
 	if !bytes.Equal(input.Bytes(), expected_result.Bytes()) {
 		t.Fatalf("input.Bytes() and expected_result.Bytes() differ.\n"+
@@ -248,10 +248,10 @@ func Test_replace_whitespace(t *testing.T) {
 	}
 
 	// 2
-	rc = replace_config{whitespace: '_'}
+	tc = tidy_config{replacement_char: '_'}
 	input = bytes.NewBuffer([]byte("foo\t  bar \t foo.txt"))
 	expected_result = bytes.NewBuffer([]byte("foo_bar_foo.txt"))
-	replace_whitespace(input, rc.whitespace)
+	replace_whitespace(input, tc.replacement_char)
 
 	if !bytes.Equal(input.Bytes(), expected_result.Bytes()) {
 		t.Fatalf("input.Bytes() and expected_result.Bytes() differ.\n"+
@@ -260,10 +260,10 @@ func Test_replace_whitespace(t *testing.T) {
 	}
 
 	// 3 - file names should not start with a replacement character
-	rc = replace_config{whitespace: '_'}
+	tc = tidy_config{replacement_char: '_'}
 	input = bytes.NewBuffer([]byte("\t  bar \t foo.txt"))
 	expected_result = bytes.NewBuffer([]byte("bar_foo.txt"))
-	replace_whitespace(input, rc.whitespace)
+	replace_whitespace(input, tc.replacement_char)
 
 	if !bytes.Equal(input.Bytes(), expected_result.Bytes()) {
 		t.Fatalf("input.Bytes() and expected_result.Bytes() differ.\n"+
@@ -284,23 +284,23 @@ func Test_replace_whitespace(t *testing.T) {
 }
 
 func Benchmark_replace_whitespace(b *testing.B) {
-	rc := replace_config{whitespace: '_'}
+	tc := tidy_config{replacement_char: '_'}
 	input := bytes.NewBuffer([]byte("foo\t  bar \t foo.txt"))
 
 	for i := 0; i < b.N; i++ {
-		replace_whitespace(input, rc.whitespace)
+		replace_whitespace(input, tc.replacement_char)
 	}
 }
 
 func Test_replace_whitespace_fields(t *testing.T) {
 	// 1
-	rc := replace_config{
-		whitespace: '_',
+	tc := tidy_config{
+		replacement_char: '_',
 	}
 
 	input := []byte("foo\t  bar \t foo.txt")
 	expected_result := []byte("foo_bar_foo.txt")
-	test_result := replace_whitespace_fields(input, rc.whitespace)
+	test_result := replace_whitespace_fields(input, tc.replacement_char)
 
 	if !bytes.Equal(test_result, expected_result) {
 		t.Fatalf("test_result is %q, but should be %q.\n",
@@ -318,15 +318,15 @@ func Test_replace_whitespace_fields(t *testing.T) {
 	}
 }
 
-func Benchmark_tidy_substiutes_fields(b *testing.B) {
+func Benchmark_replace_whitespace_fields(b *testing.B) {
 	// 1
-	rc := replace_config{
-		whitespace: '_',
+	tc := tidy_config{
+		replacement_char: '_',
 	}
 
 	input := []byte("foo\t  bar \t foo.txt")
 
 	for i := 0; i < b.N; i++ {
-		replace_whitespace_fields(input, rc.whitespace)
+		replace_whitespace_fields(input, tc.replacement_char)
 	}
 }

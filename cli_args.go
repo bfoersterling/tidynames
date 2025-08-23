@@ -27,8 +27,8 @@ func get_cli_args() (args cli_args) {
 }
 
 func (args cli_args) evalute() (err error) {
-	rc := replace_config{
-		whitespace: '_',
+	tc := tidy_config{
+		replacement_char: '_',
 	}
 
 	if args.version {
@@ -50,7 +50,7 @@ func (args cli_args) evalute() (err error) {
 		fmt.Printf("[dry run]\n")
 	}
 
-	rc.tidy_entries(args, flag.Args(), os.Stdout)
+	tc.tidy_entries(args, flag.Args(), os.Stdout)
 
 	return
 }
