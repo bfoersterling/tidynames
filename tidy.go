@@ -125,13 +125,11 @@ func remove_nonascii(name *bytes.Buffer) {
 // but do not write consecutive substitute runes
 func replace_whitespace(name *bytes.Buffer, substitute rune) {
 	name_copy := name.Bytes()
-	substitute_written := false
 	name.Reset()
 
-	for _, b := range name_copy {
+	for i, b := range name_copy {
 		if !unicode.IsSpace(rune(b)) {
 			name.WriteByte(b)
-			substitute_written = false
 			continue
 		}
 
@@ -140,10 +138,18 @@ func replace_whitespace(name *bytes.Buffer, substitute rune) {
 			continue
 		}
 
-		if unicode.IsSpace(rune(b)) && !substitute_written {
-			name.WriteByte(byte(substitute))
-			substitute_written = true
+		// don't write replacement char before file extensions
+		if peek_byte(name_copy, i) == '.' {
 			continue
+		}
+
+		// don't write replacement char if next byte will be replaced
+		if unicode.IsSpace(rune(peek_byte(name_copy, i))) {
+			continue
+		}
+
+		if unicode.IsSpace(rune(b)) {
+			name.WriteByte(byte(substitute))
 		}
 	}
 }

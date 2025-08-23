@@ -228,6 +228,17 @@ func Test_replace_whitespace(t *testing.T) {
 			"input.Bytes(): %s\nexpected_result.Bytes(): %s\n",
 			input.Bytes(), expected_result.Bytes())
 	}
+
+	// 4 - there shall be no replacement chars before periods
+	input = bytes.NewBuffer([]byte("foo \t.txt"))
+	expected_result = bytes.NewBuffer([]byte("foo.txt"))
+	replace_whitespace(input, rune('_'))
+
+	if !bytes.Equal(input.Bytes(), expected_result.Bytes()) {
+		t.Fatalf("input.Bytes() and expected_result.Bytes() differ.\n"+
+			"input.Bytes(): %s\nexpected_result.Bytes(): %s\n",
+			input.Bytes(), expected_result.Bytes())
+	}
 }
 
 func Benchmark_replace_whitespace(b *testing.B) {
