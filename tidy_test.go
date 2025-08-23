@@ -212,6 +212,27 @@ func Benchmark_remove_special_chars(b *testing.B) {
 	}
 }
 
+func Test_replace_umlauts(t *testing.T) {
+	// 1
+	input := bytes.NewBuffer([]byte("überflüssig.txt"))
+	expected_result := bytes.NewBuffer([]byte("ueberfluessig.txt"))
+
+	replace_umlauts(input)
+
+	if !bytes.Equal(input.Bytes(), expected_result.Bytes()) {
+		t.Fatalf("input.Bytes and expected_result.Bytes() differ.\n"+
+			"input.Bytes: %q\nexpected_result.Bytes(): %q\n", input.Bytes(), expected_result.Bytes())
+	}
+}
+
+func Benchmark_replace_umlauts(b *testing.B) {
+	input := bytes.NewBuffer([]byte("überflüssig.txt"))
+
+	for i := 0; i < b.N; i++ {
+		replace_umlauts(input)
+	}
+}
+
 func Test_replace_whitespace(t *testing.T) {
 	// 1
 	rc := replace_config{whitespace: '_'}

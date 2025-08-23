@@ -16,15 +16,17 @@ type replace_config struct {
 }
 
 func (rc replace_config) tidy_bytes(name []byte) []byte {
-	input_buffer := bytes.NewBuffer(name)
+	input_buffer := bytes.NewBuffer(bytes.ToLower(name))
 
 	replace_whitespace(input_buffer, rc.whitespace)
+
+	replace_umlauts(input_buffer)
 
 	remove_nonascii(input_buffer)
 
 	remove_special_chars(input_buffer)
 
-	return bytes.ToLower(input_buffer.Bytes())
+	return input_buffer.Bytes()
 }
 
 func (rc replace_config) tidy_string(name string) (proper_name string) {
@@ -134,6 +136,32 @@ func remove_special_chars(name *bytes.Buffer) {
 		if !unicode.In(r, &rt) {
 			name.WriteRune(r)
 		}
+	}
+}
+
+// only replaces lower case umlauts
+// upper case umlauts should be converted by bytes.Lower() previously
+func replace_umlauts(name *bytes.Buffer) {
+	name_copy := name.String()
+	name.Reset()
+
+	for _, r := range name_copy {
+		if r == 228 {
+			name.WriteString("ae")
+			continue
+		}
+
+		if r == 246 {
+			name.WriteString("oe")
+			continue
+		}
+
+		if r == 252 {
+			name.WriteString("ue")
+			continue
+		}
+
+		name.WriteRune(r)
 	}
 }
 
