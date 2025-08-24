@@ -198,27 +198,6 @@ func Test_removal_stage(t *testing.T) {
 	}
 }
 
-func Test_remove_nonascii(t *testing.T) {
-	// 1
-	input := bytes.NewBuffer([]byte("Löhne.txt"))
-	expected_result := bytes.NewBuffer([]byte("Lhne.txt"))
-	remove_nonascii(input)
-
-	if !bytes.Equal(input.Bytes(), expected_result.Bytes()) {
-		t.Fatalf("input and expected_result differ.\n"+
-			"input.Bytes(): %s\nexpected_result.Bytes(): %q\n",
-			input.Bytes(), expected_result.Bytes())
-	}
-}
-
-func Benchmark_remove_nonascii(b *testing.B) {
-	input := bytes.NewBuffer([]byte("Löhöhöhne.txt"))
-
-	for i := 0; i < b.N; i++ {
-		remove_nonascii(input)
-	}
-}
-
 func Test_replace_umlauts(t *testing.T) {
 	// 1
 	input := bytes.NewBuffer([]byte("überflüssig.txt"))

@@ -134,21 +134,6 @@ func (tc tidy_config) removal_stage(name *bytes.Buffer) {
 	}
 }
 
-// remove characters that are not ascii codes between 32 and 127
-// 127 is the control character DEL which should not be included
-func remove_nonascii(name *bytes.Buffer) {
-	name_copy := name.Bytes()
-
-	name.Reset()
-
-	for _, b := range name_copy {
-		// printable ascii characters
-		if (32 < b) && (b < 127) {
-			name.WriteByte(b)
-		}
-	}
-}
-
 // only replaces lower case umlauts
 // upper case umlauts should be converted by bytes.Lower() previously
 func replace_umlauts(name *bytes.Buffer) {
