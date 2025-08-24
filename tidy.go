@@ -149,20 +149,6 @@ func remove_nonascii(name *bytes.Buffer) {
 	}
 }
 
-func remove_special_chars(name *bytes.Buffer) {
-	name_copy := name.String()
-
-	rt := get_special_char_rt()
-
-	name.Reset()
-
-	for _, r := range name_copy {
-		if !unicode.In(r, &rt) {
-			name.WriteRune(r)
-		}
-	}
-}
-
 // only replaces lower case umlauts
 // upper case umlauts should be converted by bytes.Lower() previously
 func replace_umlauts(name *bytes.Buffer) {
