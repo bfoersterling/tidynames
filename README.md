@@ -20,6 +20,8 @@ Clone this repo and:
 sudo just install
 ```
 
+A `golang:alpine` container is enough to test this project.
+
 ## usage
 
 Dryrun:
