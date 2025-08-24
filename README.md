@@ -24,7 +24,7 @@ sudo just install
 
 Dryrun:
 ```
-$ ./tidynames -n test_files/*
+$ tidynames -n test_files/*
 [dry run]
 ("test_files/  leading and trailing ws  .txt" -> "test_files/leading_and_trailing_ws.txt")
 ("test_files/Foo bar.txt" -> "test_files/foo_bar.txt")
@@ -38,10 +38,13 @@ $ ./tidynames -n test_files/*
 Rename all files and dirs in the current dir:
 ```
 $ tidynames *
-"Foo bar.txt" -> "./foobar.txt"
-"This is an aweful ｜ Name for a file ® (file 1) [QJHPlKPOc78].m4a.bak" -> "./thisisanawefulnameforafile(file1)[qjhplkpoc78].m4a.bak"
-"Weird Files" -> "./weirdfiles"
+"  leading and trailing ws  .txt" -> "./leading_and_trailing_ws.txt"
+"Foo bar.txt" -> "./foo_bar.txt"
+"This is an aweful ｜ Name for a file ® (file 1) [QJHPlKPOc78].m4a.bak" -> "./this_is_an_aweful_name_for_a_file_file_1_qjhplkpoc78.m4a.bak"
+"Weird Files" -> "./weird_files"
 "already_tidy.txt" is already tidy.
+"foo   bar.txt" -> "./foo_bar.txt"
+"Übernatürlich .txt" -> "./uebernatuerlich.txt"
 ```
 
 ## TODO
